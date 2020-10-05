@@ -1,0 +1,1 @@
+dotnet pack "PaSharperExtension\PaSharperExtension.csproj" -p:NuspecFile=..\PaSharperExtension.nuspec --output . --force --verbosity detailed

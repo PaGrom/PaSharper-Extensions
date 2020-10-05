@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+    <metadata>
+        <id>PaGrom.PaSharperExtensions</id>
+        <version>0.0.1</version>
+        <title>PaSharper Extension for ReSharper</title>
+        <authors>PaGrom</authors>
+        <owners>PaGrom</owners>
+        <projectUrl>https://github.com/PaGrom/PaSharper-Extensions</projectUrl>
+        <licenseUrl>https://github.com/PaGrom/PaSharper-Extensions/blob/master/LICENSE</licenseUrl>
+        <copyright>© 2020 PaGrom</copyright>
+	<summary>Code analysis improvements and context actions.</summary>
+    	<description>
+		PaSharper Extension for ReSharper
+        </description>
+        <dependencies>
+            <dependency id="Wave" version="[202.0,202.1)" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="C:\Users\PaGrom\source\repos\PaSharper-Extensions\PaSharperExtension\bin\x86\Debug\net461\PaSharperExtension.dll" target="DotFiles" />
+    </files>
+</package>
