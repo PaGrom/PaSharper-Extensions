@@ -19,4 +19,4 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.NecessaryAwait
 }
 
 ---------------------------------------------------------
-(0): ReSharper Dead Code: Necessary 'await' (add 'async'/'await')
+(0): ReSharper Suggestion: Necessary 'await' (add 'async'/'await')

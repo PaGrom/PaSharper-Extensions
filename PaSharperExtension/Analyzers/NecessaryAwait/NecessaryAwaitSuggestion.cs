@@ -11,7 +11,7 @@ namespace PaSharperExtension.Analyzers.NecessaryAwait
     [RegisterConfigurableSeverity(
         SeverityId,
         null,
-        HighlightingGroupIds.CodeRedundancy,
+        HighlightingGroupIds.CodeSmell,
         "Necessary 'await' (PaSharper Extensions)",
         "Necessary to await task before instance disposing",
         Severity.SUGGESTION)]
@@ -22,7 +22,7 @@ namespace PaSharperExtension.Analyzers.NecessaryAwait
         OverlapResolve = OverlapResolveKind.WARNING)]
     public sealed class NecessaryAwaitSuggestion : IHighlighting
     {
-        private const string SeverityId = "NecessaryAwait";
+        private const string SeverityId = "PaSharperExtension.NecessaryAwait";
 
         internal NecessaryAwaitSuggestion(
             [NotNull] string message,
