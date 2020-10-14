@@ -14,6 +14,9 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.PossibleNullCoalescingAss
             {
                 list = new List<string>();
             }
+
+            if (list == null)
+                list = new List<string>();
         }
     }
 }

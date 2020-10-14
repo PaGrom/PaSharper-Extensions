@@ -4,6 +4,7 @@
     <TargetFramework>net461</TargetFramework>
     <Platforms>x86</Platforms>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

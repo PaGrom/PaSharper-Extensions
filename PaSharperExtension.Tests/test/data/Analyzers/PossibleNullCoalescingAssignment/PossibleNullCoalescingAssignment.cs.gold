@@ -14,9 +14,13 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.PossibleNullCoalescingAss
             {
                 list = new List<string>();
             }
+
+            |if|(1) (list == null)
+                list = new List<string>();
         }
     }
 }
 
 ---------------------------------------------------------
 (0): ReSharper Suggestion: Possible to change 'if' to '??='
+(1): ReSharper Suggestion: Possible to change 'if' to '??='

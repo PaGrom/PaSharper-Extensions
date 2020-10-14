@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
@@ -9,7 +8,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace PaSharperExtension.Analyzers.PossibleNullCoalescingAssignment
 {
-    [ElementProblemAnalyzer(typeof(IEqualityExpression), HighlightingTypes = new[] { typeof(NullCoalescingAssignmentSuggestion) })]
+    [ElementProblemAnalyzer(typeof(IEqualityExpression), HighlightingTypes = new[] {typeof(NullCoalescingAssignmentSuggestion)})]
     public sealed class PossibleNullCoalescingAssignmentAnalyzer : ElementProblemAnalyzer<IEqualityExpression>, IConditionalElementProblemAnalyzer
     {
         private static void AddNullCoalescingAssignmentHighlightings(
@@ -52,11 +51,21 @@ namespace PaSharperExtension.Analyzers.PossibleNullCoalescingAssignment
         {
             if (equalityExpression.EqualityType != EqualityExpressionType.EQEQ
                 || !(equalityExpression.Parent is IIfStatement ifStatement)
-                || ifStatement.Else != null
-                || !(ifStatement.LastChild is IBlock block)
-                || block.Statements.Count != 1
-                || !(block.Statements[0] is IExpressionStatement expressionStatement)
-                || !(expressionStatement.Expression is IAssignmentExpression assignmentExpression)
+                || ifStatement.Else != null)
+            {
+                return;
+            }
+
+            var expressionStatement = ifStatement.LastChild switch
+            {
+                IBlock block
+                    when block.Statements.Count == 1
+                         && block.Statements[0] is IExpressionStatement expSt => expSt,
+                IExpressionStatement expSt => expSt,
+                _ => null
+            };
+
+            if (!(expressionStatement?.Expression is IAssignmentExpression assignmentExpression)
                 || assignmentExpression.AssignmentType != AssignmentType.EQ
                 || !(assignmentExpression.Dest is IReferenceExpression referenceExpressionInsideIf))
             {
