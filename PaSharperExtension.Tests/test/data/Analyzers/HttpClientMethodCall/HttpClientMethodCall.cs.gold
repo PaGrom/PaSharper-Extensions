@@ -1,0 +1,51 @@
+﻿using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
+{
+    public class HttpClientMethodCall
+    {
+        async Task BaseAdreesInsideInit(CancellationToken cancellationToken)
+        {
+            var rootUrl = "http://example.com/";
+
+            rootUrl += "123/123/123";
+
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(rootUrl)
+            };
+
+            await |httpClient.GetAsync("/test", cancellationToken)|(0); //http://example.com/test
+        }
+
+        async Task BaseAddressInlineInitial(CancellationToken cancellationToken)
+        {
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("http://example.com/123");
+
+            var method = "/test";
+
+            await |httpClient.GetAsync(method, cancellationToken)|(1); //http://example.com/123/123/123/test
+        }
+
+        async Task UriVariable(CancellationToken cancellationToken)
+        {
+            var uri = new Uri("http://example.com/123");
+
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = uri;
+
+            var method = "/test";
+
+            await |httpClient.GetAsync(method, cancellationToken)|(2); //http://example.com/123/123/123/test
+        }
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Suggestion: Trim '/' from start to call 'http://example.com/123/123/test' instead of 'http://example.com/test'
+(1): ReSharper Suggestion: Trim '/' from start of variable 'method' value to call 'http://example.com/test' instead of 'http://example.com/test'
+(2): ReSharper Suggestion: Trim '/' from start of variable 'method' value to call 'http://example.com/test' instead of 'http://example.com/test'
