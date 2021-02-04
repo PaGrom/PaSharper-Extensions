@@ -15,7 +15,7 @@ namespace PaSharperExtension.Tests.Analyzers
         protected override string RelativeTestDataPath => @"Analyzers\HttpClientMethodCall";
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile, IContextBoundSettingsStore settingsStore)
-            => highlighting is HttpClientMethodCallSuggestion;
+            => highlighting is CognitiveComplexityInfoHint;
 
         [Test]
         public void TestHttpClientMethodCall() => DoNamedTest2();

@@ -13,7 +13,12 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
 {
-    [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new[] {typeof(HttpClientMethodCallSuggestion)})]
+    [ElementProblemAnalyzer(typeof(IInvocationExpression),
+        HighlightingTypes = new[]
+        {
+            //typeof(HttpClientMethodCallSuggestion),
+            typeof(CognitiveComplexityInfoHint)
+        })]
     public sealed class HttpClientMethodCallAnalyzer : ElementProblemAnalyzer<IInvocationExpression>, IElementProblemAnalyzerConsumingControlFlowGraph
     {
         private readonly List<IMethodDeclaration> _analyzedMethodDeclarations = new List<IMethodDeclaration>();
@@ -58,7 +63,9 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
                                                                       $"instead of '{possibleWrongHttpClientMethodCall.UriBeforeFix}'",
                     possibleWrongHttpClientMethodCall.VariableToChangeExpression);
 
-                consumer.AddHighlighting(highlighting, possibleWrongHttpClientMethodCall.MethodInvocationExpression.GetDocumentRange());
+                //consumer.AddHighlighting(highlighting, possibleWrongHttpClientMethodCall.MethodInvocationExpression.GetDocumentRange());
+
+                consumer.AddHighlighting(new CognitiveComplexityInfoHint(possibleWrongHttpClientMethodCall.VariableToChangeExpression, possibleWrongHttpClientMethodCall.VariableToChangeExpression.GetDocumentRange().EndOffset, 1));
             }
         }
     }
