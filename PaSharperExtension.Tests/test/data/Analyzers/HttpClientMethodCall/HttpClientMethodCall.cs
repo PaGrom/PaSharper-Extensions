@@ -11,7 +11,9 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
         {
             var rootUrl = "http://example.com/";
 
-            rootUrl += "123/123/123";
+            rootUrl += "1/2/3";
+
+            rootUrl += "/4";
 
             var httpClient = new HttpClient()
             {
@@ -19,14 +21,15 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
             };
 
             await httpClient.GetAsync("/test", cancellationToken); //http://example.com/test
+            await httpClient.GetAsync("test", cancellationToken); //http://example.com/test
         }
 
         async Task BaseAddressInlineInitial(CancellationToken cancellationToken)
         {
             var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://example.com/123");
+            httpClient.BaseAddress = new Uri("http://example.com/123/");
 
-            var method = "/test";
+            var method = "test";
 
             await httpClient.GetAsync(method, cancellationToken); //http://example.com/123/123/123/test
         }
@@ -38,7 +41,7 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
             var httpClient = new HttpClient();
             httpClient.BaseAddress = uri;
 
-            var method = "/test";
+            var method = "test";
 
             await httpClient.GetAsync(method, cancellationToken); //http://example.com/123/123/123/test
         }

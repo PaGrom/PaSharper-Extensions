@@ -16,8 +16,7 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
     [ElementProblemAnalyzer(typeof(IInvocationExpression),
         HighlightingTypes = new[]
         {
-            //typeof(HttpClientMethodCallSuggestion),
-            typeof(CognitiveComplexityInfoHint)
+            typeof(HttpClientMethodCallInfoHint)
         })]
     public sealed class HttpClientMethodCallAnalyzer : ElementProblemAnalyzer<IInvocationExpression>, IElementProblemAnalyzerConsumingControlFlowGraph
     {
@@ -55,17 +54,10 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
 
             inspector.Inspect();
 
-            foreach (var possibleWrongHttpClientMethodCall in inspector.PossibleWrongMethodCalls)
+            foreach (var httpClientMethodCallInfo in inspector.HttpClientMethodCallInfos)
             {
-                var highlighting = new HttpClientMethodCallSuggestion("Trim '/' from start " +
-                                                                      $"{(string.IsNullOrWhiteSpace(possibleWrongHttpClientMethodCall.MethodVariableToFixName) ? "" : $"of variable '{possibleWrongHttpClientMethodCall.MethodVariableToFixName}' value ")}" +
-                                                                      $"to call '{possibleWrongHttpClientMethodCall.UriAfterFix}' " +
-                                                                      $"instead of '{possibleWrongHttpClientMethodCall.UriBeforeFix}'",
-                    possibleWrongHttpClientMethodCall.VariableToChangeExpression);
-
-                //consumer.AddHighlighting(highlighting, possibleWrongHttpClientMethodCall.MethodInvocationExpression.GetDocumentRange());
-
-                consumer.AddHighlighting(new CognitiveComplexityInfoHint(possibleWrongHttpClientMethodCall.VariableToChangeExpression, possibleWrongHttpClientMethodCall.VariableToChangeExpression.GetDocumentRange().EndOffset, 1));
+                consumer.AddHighlighting(new HttpClientMethodCallInfoHint(httpClientMethodCallInfo.MethodInvocationExpression,
+                    new Uri(new Uri(httpClientMethodCallInfo.Root), httpClientMethodCallInfo.Path).AbsoluteUri));
             }
         }
     }
@@ -104,15 +96,11 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
         public List<StringVariableInfo> MethodValues { get; set; } = new List<StringVariableInfo>();
     }
 
-    public class PossibleWrongHttpClientMethodCall
+    public class HttpClientMethodCallInfo
     {
-        public string UriBeforeFix { get; set; }
+        public string Root { get; set; }
 
-        public string UriAfterFix { get; set; }
-
-        public ICSharpLiteralExpression VariableToChangeExpression { get; set; }
-
-        public string MethodVariableToFixName { get; set; }
+        public string Path { get; set; }
 
         public IInvocationExpression MethodInvocationExpression { get; set; }
     }
@@ -136,7 +124,7 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
     {
         private const string HttpClientBaseAddressPropertyName = nameof(HttpClient.BaseAddress);
 
-        public List<PossibleWrongHttpClientMethodCall> PossibleWrongMethodCalls { get; } = new List<PossibleWrongHttpClientMethodCall>();
+        public List<HttpClientMethodCallInfo> HttpClientMethodCallInfos { get; } = new List<HttpClientMethodCallInfo>();
 
         public HttpClientInspector([NotNull] ControlFlowGraph controlFlowGraph, [NotNull] IControlFlowContextFactory<HttpClientAnalyzerContext> contextFactory) : base(controlFlowGraph, contextFactory)
         {
@@ -200,20 +188,12 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
 
             httpClientInfo.MethodValues.Add(stringVariableInfo);
 
-            var (_, pathPart) = ParseRootUri(httpClientInfo.RootUriVariableInfo.UriStringVariableInfo.VariableValue);
-
-            if (stringVariableInfo.VariableValue.StartsWith("/")
-                && !string.IsNullOrWhiteSpace(pathPart))
+            HttpClientMethodCallInfos.Add(new HttpClientMethodCallInfo
             {
-                PossibleWrongMethodCalls.Add(new PossibleWrongHttpClientMethodCall
-                {
-                    UriBeforeFix = new Uri(new Uri(httpClientInfo.RootUriVariableInfo.UriStringVariableInfo.VariableValue), stringVariableInfo.VariableValue).AbsoluteUri,
-                    UriAfterFix = new Uri(new Uri(httpClientInfo.RootUriVariableInfo.UriStringVariableInfo.VariableValue), stringVariableInfo.VariableValue.TrimStart('/')).AbsoluteUri,
-                    VariableToChangeExpression = stringVariableInfo.RootLiteralExpression,
-                    MethodVariableToFixName = stringVariableInfo.VariableName,
-                    MethodInvocationExpression = invocationExpression
-                });
-            }
+                Root = httpClientInfo.RootUriVariableInfo.UriStringVariableInfo.VariableValue,
+                Path = stringVariableInfo.VariableValue,
+                MethodInvocationExpression = invocationExpression
+            });
         }
 
         private static void ProcessAssignmentToReferenceExpression(IAssignmentExpression assignmentExpression, IReferenceExpression referenceExpression, HttpClientAnalyzerContext analyzerContext)
@@ -434,24 +414,6 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
             httpClientInfo.RootUriVariableInfo = ProcessUriCreationExpression(baseAddressUriCreationExpression, analyzerContext);
 
             return httpClientInfo;
-        }
-
-        /// <summary>
-        /// Split url to parts (general and path parts)
-        /// </summary>
-        private static (string generalPart, string pathPart) ParseRootUri(string rootUri)
-        {
-            var rootUriParts = rootUri.Split(new[] {"//"}, StringSplitOptions.None);
-
-            var (protocol, generalWithoutProtocol) = rootUriParts.Length switch
-            {
-                2 => (rootUriParts[0] + "//", rootUriParts[1]),
-                _ => (string.Empty, rootUriParts[0])
-            };
-
-            rootUriParts = generalWithoutProtocol.Split(new[] {'/'}, StringSplitOptions.None);
-
-            return (protocol + rootUriParts[0], string.Join("/", rootUri.Skip(1)));
         }
     }
 }
