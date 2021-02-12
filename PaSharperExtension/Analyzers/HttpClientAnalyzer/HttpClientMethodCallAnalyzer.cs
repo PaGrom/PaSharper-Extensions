@@ -56,7 +56,9 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
 
             foreach (var httpClientMethodCallInfo in inspector.HttpClientMethodCallInfos)
             {
-                consumer.AddHighlighting(new HttpClientMethodCallInfoHint(httpClientMethodCallInfo.MethodInvocationExpression,
+                consumer.AddHighlighting(new HttpClientMethodCallInfoHint(httpClientMethodCallInfo.HttpClientMethodFirstArgument,
+                    httpClientMethodCallInfo.RootVariableDeclarationNode,
+                    httpClientMethodCallInfo.PathVariableDeclarationNode,
                     new Uri(new Uri(httpClientMethodCallInfo.Root), httpClientMethodCallInfo.Path).AbsoluteUri));
             }
         }
@@ -73,6 +75,8 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
 
     public class StringVariableInfo
     {
+        public ITreeNode VariableDeclarationNode { get; set; }
+
         public string VariableName { get; set; }
 
         public string VariableValue { get; set; }
@@ -98,11 +102,15 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
 
     public class HttpClientMethodCallInfo
     {
+        public ITreeNode RootVariableDeclarationNode { get; set; }
+
         public string Root { get; set; }
+
+        public ITreeNode PathVariableDeclarationNode { get; set; }
 
         public string Path { get; set; }
 
-        public IInvocationExpression MethodInvocationExpression { get; set; }
+        public ICSharpExpression HttpClientMethodFirstArgument { get; set; }
     }
 
     public class HttpClientContextFactory : IControlFlowContextFactory<HttpClientAnalyzerContext>
@@ -174,7 +182,9 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
                 return;
             }
 
-            var stringVariableInfo = invocationExpression.Arguments[0].Value switch
+            var argument = invocationExpression.Arguments[0].Value;
+
+            var stringVariableInfo = argument switch
             {
                 ICSharpLiteralExpression literalExpression => ProcessStringLiteralExpression(literalExpression),
                 IReferenceExpression referenceExpression => analyzerContext.StringVariables.SingleOrDefault(v => v.VariableName == referenceExpression.NameIdentifier.Name),
@@ -190,9 +200,11 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
 
             HttpClientMethodCallInfos.Add(new HttpClientMethodCallInfo
             {
+                RootVariableDeclarationNode = httpClientInfo.RootUriVariableInfo.UriStringVariableInfo.VariableDeclarationNode,
                 Root = httpClientInfo.RootUriVariableInfo.UriStringVariableInfo.VariableValue,
+                PathVariableDeclarationNode = stringVariableInfo.VariableDeclarationNode,
                 Path = stringVariableInfo.VariableValue,
-                MethodInvocationExpression = invocationExpression
+                HttpClientMethodFirstArgument = argument
             });
         }
 
@@ -292,6 +304,7 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
 
             var stringVariableInfo = ProcessStringLiteralExpression(literalExpression);
             stringVariableInfo.VariableName = variableDeclaration.DeclaredName;
+            stringVariableInfo.VariableDeclarationNode = variableDeclaration;
 
             analyzerContext.StringVariables.Add(stringVariableInfo);
 
