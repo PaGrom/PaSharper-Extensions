@@ -1,4 +1,6 @@
-﻿using JetBrains.DocumentModel;
+﻿using System.Drawing;
+using JetBrains.Application.InlayHints;
+using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
@@ -6,7 +8,7 @@ using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.UI.RichText;
 
-namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
+namespace PaSharperExtension.Analyzers.HttpClientMethodCall
 {
     [DaemonIntraTextAdornmentProvider(typeof(HttpClientMethodCallAdornmentProvider))]
     [DaemonTooltipProvider(typeof(InlayHintTooltipProvider))]
@@ -19,18 +21,21 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
         public HttpClientMethodCallInfoHint(ITreeNode httpClientMethodArgumentNode,
             ITreeNode rootVariableDeclarationNode,
             ITreeNode pathVariableDeclarationNode,
-            string uriToCall)
+            string uriToCall,
+            InlayHintsMode inlayHintsMode)
         {
             RootVariableDeclarationNode = rootVariableDeclarationNode;
             PathVariableDeclarationNode = pathVariableDeclarationNode;
             UriToCall = uriToCall;
+            InlayHintsMode = inlayHintsMode;
             _httpClientMethodArgumentNode = httpClientMethodArgumentNode;
-            _offset = httpClientMethodArgumentNode.GetDocumentRange().EndOffset;
+            _offset = httpClientMethodArgumentNode.GetDocumentRange().StartOffset;
         }
 
         public ITreeNode RootVariableDeclarationNode { get; }
         public ITreeNode PathVariableDeclarationNode { get; }
         public string UriToCall { get; }
+        public InlayHintsMode InlayHintsMode { get; }
 
         public bool IsValid()
         {
@@ -44,6 +49,8 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
 
         public string ToolTip => UriToCall;
         public string ErrorStripeToolTip { get; }
-        public RichText Description { get; }
+        public RichText Description => new RichText("HttpClient will invoke ")
+            .Append(UriToCall, new TextStyle(FontStyle.Italic))
+            .Append(" uri");
     }
 }

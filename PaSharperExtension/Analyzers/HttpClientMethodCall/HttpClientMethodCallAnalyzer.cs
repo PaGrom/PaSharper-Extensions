@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+// TODO: Remove linq
 using System.Linq;
 using System.Net.Http;
 using JetBrains.Annotations;
+using JetBrains.Application.InlayHints;
+using JetBrains.Application.Settings;
+using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ControlFlow;
@@ -10,20 +14,33 @@ using JetBrains.ReSharper.Psi.ControlFlow.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Impl.Resolve;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using PaSharperExtension.Analyzers.HttpClientMethodCall.Options;
 
-namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
+namespace PaSharperExtension.Analyzers.HttpClientMethodCall
 {
-    [ElementProblemAnalyzer(typeof(IInvocationExpression),
-        HighlightingTypes = new[]
-        {
-            typeof(HttpClientMethodCallInfoHint)
-        })]
+    [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new[] {typeof(HttpClientMethodCallInfoHint)})]
     public sealed class HttpClientMethodCallAnalyzer : ElementProblemAnalyzer<IInvocationExpression>, IElementProblemAnalyzerConsumingControlFlowGraph
     {
+        private readonly Lifetime _lifetime;
+        private readonly ISettingsStore _settingsStore;
         private readonly List<IMethodDeclaration> _analyzedMethodDeclarations = new List<IMethodDeclaration>();
+
+        public HttpClientMethodCallAnalyzer(Lifetime lifetime, ISettingsStore settingsStore)
+        {
+            _lifetime = lifetime;
+            _settingsStore = settingsStore;
+        }
 
         protected override void Run(IInvocationExpression invocationExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
+            var visibilityMode = _settingsStore.BindToContextLive(_lifetime, ContextRange.ApplicationWide)
+                .GetValueProperty(_lifetime, (HttpClientMethodCallHintOptions key) => key.VisibilityMode).GetValue();
+
+            if (visibilityMode == InlayHintsMode.Never)
+            {
+                return;
+            }
+
             // Run analyzer just on HttpClient invocation
             if (invocationExpression.ExtensionQualifier == null
                 || !invocationExpression.ExtensionQualifier.GetExpressionType().ToIType().IsHttpClient())
@@ -59,7 +76,8 @@ namespace PaSharperExtension.Analyzers.HttpClientAnalyzer
                 consumer.AddHighlighting(new HttpClientMethodCallInfoHint(httpClientMethodCallInfo.HttpClientMethodFirstArgument,
                     httpClientMethodCallInfo.RootVariableDeclarationNode,
                     httpClientMethodCallInfo.PathVariableDeclarationNode,
-                    new Uri(new Uri(httpClientMethodCallInfo.Root), httpClientMethodCallInfo.Path).AbsoluteUri));
+                    new Uri(new Uri(httpClientMethodCallInfo.Root), httpClientMethodCallInfo.Path).AbsoluteUri,
+                    visibilityMode));
             }
         }
     }

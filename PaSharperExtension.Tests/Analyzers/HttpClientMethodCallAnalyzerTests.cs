@@ -4,7 +4,7 @@ using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
-using PaSharperExtension.Analyzers.HttpClientAnalyzer;
+using PaSharperExtension.Analyzers.HttpClientMethodCall;
 
 namespace PaSharperExtension.Tests.Analyzers
 {
