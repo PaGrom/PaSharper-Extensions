@@ -1,25 +1,23 @@
-﻿using System.Drawing;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using JetBrains.Application.InlayHints;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Icons.FeaturesIntellisenseThemedIcons;
 using JetBrains.Application.UI.Options;
-using JetBrains.Application.UI.Options.OptionPages;
 using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.DataFlow;
-using JetBrains.IDE.UI.Options;
 using JetBrains.Lifetimes;
-using JetBrains.UI.RichText;
+using JetBrains.ReSharper.Feature.Services.CSharp.ParameterNameHints;
+using JetBrains.ReSharper.Feature.Services.InlayHints;
 
 namespace PaSharperExtension.Analyzers.HttpClientMethodCall.Options
 {
     /// <summary>
     /// Options page structure
     /// </summary>
-    [OptionsPage(Pid, "HttpClient Method Call Hint", typeof(FeaturesIntellisenseThemedIcons.ParameterInfoPage), ParentId = ToolsPage.PID)]
-    public class HttpClientMethodCallHintOptionsPage : BeSimpleOptionsPage
+    [OptionsPage(Pid, "[PaSharper] HttpClient Method Call Hint", typeof(FeaturesIntellisenseThemedIcons.ParameterInfoPage), ParentId = CSharpOtherInlayHintsOptionsPage.PID)]
+    public class HttpClientMethodCallHintOptionsPage : InlayHintsOptionPageBase
     {
-        public const string Pid = "HttpClientMethodCallHintOptions";
+        public const string Pid = "PaSharper.HttpClientMethodCallHintOptions";
 
         public HttpClientMethodCallHintOptionsPage(Lifetime lifetime,
             OptionsPageContext optionsPageContext,
@@ -40,17 +38,9 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall.Options
                     (HttpClientMethodCallHintOptions key) => key.VisibilityMode, a.New);
             });
 
-            AddRichText(new RichText("You can set the default visibility of inlay hints on the ")
-                .Append("Environment", new TextStyle(FontStyle.Italic))
-                .Append(" | ")
-                .Append("Inlay Hints", new TextStyle(FontStyle.Italic))
-                .Append(" | ")
-                .Append("General", new TextStyle(FontStyle.Italic))
-                .Append(" options page"));
+            AddVisibilityHelpText();
 
-            AddRichText(new RichText("General", new TextStyle(FontStyle.Bold)));
-
-            AddComboEnum((HttpClientMethodCallHintOptions key) => key.VisibilityMode, "Visibility:");
+            AddVisibilityOption((HttpClientMethodCallHintOptions key) => key.VisibilityMode);
         }
     }
 }

@@ -23,22 +23,14 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall
     public class HttpClientMethodCallAdornmentDataModel : IIntraTextAdornmentDataModel
     {
         private readonly ISettingsStore _settingsStore;
-        private readonly ITreeNode _rootVariableDeclarationNode;
-        private readonly ITreeNode _pathVariableDeclarationNode;
-        private readonly string _uriToCall;
+        private readonly HttpClientMethodCallInfoHint _hint;
 
         public HttpClientMethodCallAdornmentDataModel(
             ISettingsStore settingsStore,
-            ITreeNode rootVariableDeclarationNode,
-            ITreeNode pathVariableDeclarationNode,
-            string uriToCall,
-            InlayHintsMode inlayHintsMode)
+            HttpClientMethodCallInfoHint hint)
         {
             _settingsStore = settingsStore;
-            _rootVariableDeclarationNode = rootVariableDeclarationNode;
-            _pathVariableDeclarationNode = pathVariableDeclarationNode;
-            _uriToCall = uriToCall;
-            InlayHintsMode = inlayHintsMode;
+            _hint = hint;
         }
 
         // клик с контролм на хинт
@@ -54,7 +46,7 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall
         /// <summary>
         /// Inlay Hint Text
         /// </summary>
-        public RichText Text => _uriToCall;
+        public RichText Text => _hint.ToolTip;
 
         /// <summary>
         /// Turn on context menu on RClick on inlay hint
@@ -84,12 +76,12 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall
         /// <summary>
         /// Inlay Hint icon (on left side)
         /// </summary>
-        public IconId IconId => JetBrains.Application.UI.Icons.CommonThemedIcons.CommonThemedIcons.Move.Id;
+        public IconId IconId => null;
 
         /// <summary>
         /// If true inlay hint will on right side of tree node, if else - left side
         /// </summary>
-        public bool IsPreceding => true;
+        public bool IsPreceding => _hint.HttpClientMethodArgumentNode is ILiteralExpression;
 
         /// <summary>
         /// Order among the other inlay hints. The closer to 0, the closer to tree node
@@ -112,11 +104,11 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall
                     "Open link in browser", null, BulbMenuAnchors.FirstClassContextItems),
                 new BulbMenuItem(new ExecutableItem(() =>
                 {
-                    _rootVariableDeclarationNode.NavigateToTreeNode(true);
+                    _hint.RootVariableDeclarationNode.NavigateToTreeNode(true);
                 }), "Navigate to root variable declaration", null, BulbMenuAnchors.FirstClassContextItems),
                 new BulbMenuItem(new ExecutableItem(() =>
                 {
-                    _pathVariableDeclarationNode.NavigateToTreeNode(true);
+                    _hint.PathVariableDeclarationNode.NavigateToTreeNode(true);
                 }), "Navigate to path variable declaration", null, BulbMenuAnchors.FirstClassContextItems)
             };
 

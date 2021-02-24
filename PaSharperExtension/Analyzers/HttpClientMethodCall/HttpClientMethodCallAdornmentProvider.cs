@@ -22,12 +22,7 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall
         public IIntraTextAdornmentDataModel CreateDataModel(IHighlighter highlighter)
         {
             return highlighter.UserData is HttpClientMethodCallInfoHint hint
-                ? new HttpClientMethodCallAdornmentDataModel(
-                    _settingsStore,
-                    hint.RootVariableDeclarationNode,
-                    hint.PathVariableDeclarationNode,
-                    hint.UriToCall,
-                    hint.InlayHintsMode)
+                ? new HttpClientMethodCallAdornmentDataModel(_settingsStore, hint)
                 : null;
         }
     }
