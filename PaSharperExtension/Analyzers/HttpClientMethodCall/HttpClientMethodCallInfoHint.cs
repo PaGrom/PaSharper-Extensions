@@ -6,7 +6,6 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
 using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.VB.Tree;
 using JetBrains.UI.RichText;
 
 namespace PaSharperExtension.Analyzers.HttpClientMethodCall
@@ -16,20 +15,20 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall
     [StaticSeverityHighlighting(Severity.INFO, typeof(HighlightingGroupIds.CodeInsights), AttributeId = AnalysisHighlightingAttributeIds.PARAMETER_NAME_HINT)]
     public class HttpClientMethodCallInfoHint : IInlayHintWithDescriptionHighlighting
     {
-        public ITreeNode RootVariableDeclarationNode { get; }
-        public ITreeNode PathVariableDeclarationNode { get; }
+        public ITreeNode BaseAddressVariableDeclarationNode { get; }
+        public ITreeNode MethodAddressVariableDeclarationNode { get; }
         public string UriToCall { get; }
         public InlayHintsMode InlayHintsMode { get; }
         public ITreeNode HttpClientMethodArgumentNode;
 
         public HttpClientMethodCallInfoHint(ITreeNode httpClientMethodArgumentNode,
-            ITreeNode rootVariableDeclarationNode,
-            ITreeNode pathVariableDeclarationNode,
+            ITreeNode baseAddressVariableDeclarationNode,
+            ITreeNode methodAddressVariableDeclarationNode,
             string uriToCall,
             InlayHintsMode inlayHintsMode)
         {
-            RootVariableDeclarationNode = rootVariableDeclarationNode;
-            PathVariableDeclarationNode = pathVariableDeclarationNode;
+            BaseAddressVariableDeclarationNode = baseAddressVariableDeclarationNode;
+            MethodAddressVariableDeclarationNode = methodAddressVariableDeclarationNode;
             UriToCall = uriToCall;
             InlayHintsMode = inlayHintsMode;
             HttpClientMethodArgumentNode = httpClientMethodArgumentNode;

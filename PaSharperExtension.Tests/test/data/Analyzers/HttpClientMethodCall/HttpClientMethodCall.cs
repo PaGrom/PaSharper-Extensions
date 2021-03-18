@@ -45,5 +45,22 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
 
             await httpClient.GetAsync(method, cancellationToken); //http://example.com/123/123/123/test
         }
+
+        async Task UriVariable(bool a, CancellationToken cancellationToken)
+        {
+            var uri = new Uri("http://example.com/123");
+
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = uri;
+
+            var method = "test";
+
+            if (a)
+            {
+                method = "1/2/3";
+            }
+
+            await httpClient.GetAsync(method, cancellationToken); //http://example.com/123/123/123/test
+        }
     }
 }

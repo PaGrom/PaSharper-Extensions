@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Psi;
 
-namespace PaSharperExtension
+namespace PaSharperExtension.Extensions
 {
     /// <summary>
     /// Extension methods for IType

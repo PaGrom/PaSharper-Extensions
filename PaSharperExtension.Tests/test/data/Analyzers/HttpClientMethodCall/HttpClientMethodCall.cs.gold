@@ -20,8 +20,8 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
                 BaseAddress = new Uri(rootUrl)
             };
 
-            await httpClient.GetAsync("/test", cancellationToken)||(0); //http://example.com/test
-            await httpClient.GetAsync("test", cancellationToken)||(1); //http://example.com/test
+            await httpClient.GetAsync("||(0)/test", cancellationToken); //http://example.com/test
+            await httpClient.GetAsync("||(1)test", cancellationToken); //http://example.com/test
         }
 
         async Task BaseAddressInlineInitial(CancellationToken cancellationToken)
@@ -31,7 +31,7 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
 
             var method = "test";
 
-            await httpClient.GetAsync(method, cancellationToken)||(2); //http://example.com/123/123/123/test
+            await httpClient.GetAsync(method||(2), cancellationToken); //http://example.com/123/123/123/test
         }
 
         async Task UriVariable(CancellationToken cancellationToken)
@@ -43,13 +43,30 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
 
             var method = "test";
 
-            await httpClient.GetAsync(method, cancellationToken)||(3); //http://example.com/123/123/123/test
+            await httpClient.GetAsync(method||(3), cancellationToken); //http://example.com/123/123/123/test
+        }
+
+        async Task UriVariable(bool a, CancellationToken cancellationToken)
+        {
+            var uri = new Uri("http://example.com/123");
+
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = uri;
+
+            var method = "test";
+
+            if (a)
+            {
+                method = "1/2/3";
+            }
+
+            await httpClient.GetAsync(method, cancellationToken); //http://example.com/123/123/123/test
         }
     }
 }
 
 ---------------------------------------------------------
-(0): ReSharper Parameter Name Hint: (T) 'http://example.com/test' (E) ''
-(1): ReSharper Parameter Name Hint: (T) 'http://example.com/1/2/3/test' (E) ''
-(2): ReSharper Parameter Name Hint: (T) 'http://example.com/123/test' (E) ''
-(3): ReSharper Parameter Name Hint: (T) 'http://example.com/test' (E) ''
+(0): ReSharper Parameter Name Hint: (T) 'http://example.com' (E) ''
+(1): ReSharper Parameter Name Hint: (T) 'http://example.com/1/2/3/' (E) ''
+(2): ReSharper Parameter Name Hint: (T) '/* http://example.com/123/test */' (E) ''
+(3): ReSharper Parameter Name Hint: (T) '/* http://example.com/test */' (E) ''

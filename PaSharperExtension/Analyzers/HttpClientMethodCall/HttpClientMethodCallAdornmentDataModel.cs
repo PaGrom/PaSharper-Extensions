@@ -4,7 +4,6 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Controls.Utils;
-using JetBrains.Application.UI.Icons.FeaturesIntellisenseThemedIcons;
 using JetBrains.Application.UI.PopupLayout;
 using JetBrains.ReSharper.Feature.Services.InlayHints;
 using JetBrains.ReSharper.Feature.Services.Navigation.NavigationExtensions;
@@ -33,7 +32,6 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall
             _hint = hint;
         }
 
-        // клик с контролм на хинт
         /// <summary>
         /// Action executes after Crtl+LClick on inlay hint
         /// Enabled if <see cref="IsNavigable"/> is true
@@ -51,7 +49,7 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall
         /// <summary>
         /// Turn on context menu on RClick on inlay hint
         /// </summary>
-        public bool HasContextMenu => true; // контекстное меню по правой кнопке
+        public bool HasContextMenu => true;
 
         /// <summary>
         /// Context menu title
@@ -66,7 +64,7 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall
         /// <summary>
         /// If true <see cref="ExecuteNavigation"/> will be invoked on Ctrl+LClick
         /// </summary>
-        public bool IsNavigable => true; // можно ли Ctrl+click
+        public bool IsNavigable => true;
 
         /// <summary>
         /// TODO:
@@ -104,11 +102,11 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall
                     "Open link in browser", null, BulbMenuAnchors.FirstClassContextItems),
                 new BulbMenuItem(new ExecutableItem(() =>
                 {
-                    _hint.RootVariableDeclarationNode.NavigateToTreeNode(true);
+                    _hint.BaseAddressVariableDeclarationNode.NavigateToTreeNode(true);
                 }), "Navigate to root variable declaration", null, BulbMenuAnchors.FirstClassContextItems),
                 new BulbMenuItem(new ExecutableItem(() =>
                 {
-                    _hint.PathVariableDeclarationNode.NavigateToTreeNode(true);
+                    _hint.MethodAddressVariableDeclarationNode.NavigateToTreeNode(true);
                 }), "Navigate to path variable declaration", null, BulbMenuAnchors.FirstClassContextItems)
             };
 
