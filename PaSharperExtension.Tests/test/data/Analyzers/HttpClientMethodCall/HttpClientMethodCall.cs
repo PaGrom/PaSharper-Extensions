@@ -9,19 +9,23 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
     {
         async Task BaseAdreesInsideInit(CancellationToken cancellationToken)
         {
-            var rootUrl = "http://example.com/";
+            string rootUrl, testMethod;
+
+            rootUrl = "http://example.com/";
 
             rootUrl += "1/2/3";
 
             rootUrl += "/4";
+
+            testMethod = "test";
 
             var httpClient = new HttpClient()
             {
                 BaseAddress = new Uri(rootUrl)
             };
 
-            await httpClient.GetAsync("/test", cancellationToken); //http://example.com/test
-            await httpClient.GetAsync("test", cancellationToken); //http://example.com/test
+            await httpClient.GetAsync("/test", cancellationToken);
+            await httpClient.GetAsync(testMethod, cancellationToken);
         }
 
         async Task BaseAddressInlineInitial(CancellationToken cancellationToken)
@@ -31,7 +35,7 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
 
             var method = "test";
 
-            await httpClient.GetAsync(method, cancellationToken); //http://example.com/123/123/123/test
+            await httpClient.GetAsync(method, cancellationToken);
         }
 
         async Task UriVariable(CancellationToken cancellationToken)
@@ -43,7 +47,7 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
 
             var method = "test";
 
-            await httpClient.GetAsync(method, cancellationToken); //http://example.com/123/123/123/test
+            await httpClient.GetAsync(method, cancellationToken);
         }
 
         async Task UriVariable(bool a, CancellationToken cancellationToken)
@@ -60,7 +64,7 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
                 method = "1/2/3";
             }
 
-            await httpClient.GetAsync(method, cancellationToken); //http://example.com/123/123/123/test
+            await httpClient.GetAsync(method, cancellationToken);
         }
     }
 }

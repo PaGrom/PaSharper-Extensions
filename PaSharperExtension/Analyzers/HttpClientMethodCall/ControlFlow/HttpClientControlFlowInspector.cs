@@ -50,8 +50,7 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall.ControlFlow
                 ProcessAssignmentToReferenceExpression(assignmentExpression, referenceExpression, controlFlowContext);
             }
 
-            if (element.SourceElement is IInvocationExpression {ExtensionQualifier: { }} invocationExpression
-                && invocationExpression.ExtensionQualifier is ExtensionArgumentInfo extensionArgumentInfo
+            if (element.SourceElement is IInvocationExpression {ExtensionQualifier: ExtensionArgumentInfo extensionArgumentInfo} invocationExpression
                 && extensionArgumentInfo.GetExpressionType().ToIType().IsHttpClient()
                 && extensionArgumentInfo.Expression is IReferenceExpression httpClientReferenceExpression)
             {
@@ -210,13 +209,10 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall.ControlFlow
         /// </summary>
         private static StringVariableInfo ProcessStringVariableDeclaration(ILocalVariableDeclaration variableDeclaration, HttpClientControlFlowContext controlFlowContext)
         {
-            // TODO: declaration and initialization in different places
-            if (!(variableDeclaration.Initial is IExpressionInitializer {Value: ICSharpLiteralExpression literalExpression}))
-            {
-                return null;
-            }
+            var stringVariableInfo = variableDeclaration.Initial is IExpressionInitializer { Value: ICSharpLiteralExpression literalExpression }
+                ? ProcessStringLiteralExpression(literalExpression)
+                : new StringVariableInfo();
 
-            var stringVariableInfo = ProcessStringLiteralExpression(literalExpression);
             stringVariableInfo.VariableName = variableDeclaration.DeclaredName;
             stringVariableInfo.VariableDeclarationNode = variableDeclaration;
 
