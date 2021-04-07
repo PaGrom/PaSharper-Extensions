@@ -67,4 +67,19 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
             await httpClient.GetAsync(method, cancellationToken);
         }
     }
+
+    public class HttpClientMethodCall
+    {
+        public const string ConstRootUrl = "http://example.com/123/";
+
+        async Task BaseAddressInlineInitial(CancellationToken cancellationToken)
+        {
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri(ConstRootUrl);
+
+            var method = "test";
+
+            await httpClient.GetAsync(method, cancellationToken);
+        }
+    }
 }

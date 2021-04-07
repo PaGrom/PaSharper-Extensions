@@ -1,6 +1,6 @@
 ﻿using JetBrains.ReSharper.Psi.Tree;
 
-namespace PaSharperExtension.Analyzers.HttpClientMethodCall.ControlFlow.Context
+namespace PaSharperExtension.Analyzers.HttpClientMethodCall.Context
 {
     /// <summary>
     /// String variable info

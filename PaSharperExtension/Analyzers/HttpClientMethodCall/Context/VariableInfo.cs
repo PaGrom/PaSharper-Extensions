@@ -1,4 +1,4 @@
-﻿namespace PaSharperExtension.Analyzers.HttpClientMethodCall.ControlFlow.Context
+﻿namespace PaSharperExtension.Analyzers.HttpClientMethodCall.Context
 {
     /// <summary>
     /// Abstract variable info

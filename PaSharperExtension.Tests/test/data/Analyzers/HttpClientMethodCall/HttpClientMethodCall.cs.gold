@@ -67,6 +67,21 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
             await httpClient.GetAsync(method, cancellationToken);
         }
     }
+
+    public class HttpClientMethodCall
+    {
+        public const string ConstRootUrl = "http://example.com/123/";
+
+        async Task BaseAddressInlineInitial(CancellationToken cancellationToken)
+        {
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri(ConstRootUrl);
+
+            var method = "test";
+
+            await httpClient.GetAsync(method||(4), cancellationToken);
+        }
+    }
 }
 
 ---------------------------------------------------------
@@ -74,3 +89,4 @@ namespace PaSharperExtension.Tests.test.data.Analyzers.HttpClientMethodCall
 (1): ReSharper Parameter Name Hint: (T) '/* http://example.com/1/2/3/test */' (E) ''
 (2): ReSharper Parameter Name Hint: (T) '/* http://example.com/123/test */' (E) ''
 (3): ReSharper Parameter Name Hint: (T) '/* http://example.com/test */' (E) ''
+(4): ReSharper Parameter Name Hint: (T) '/* http://example.com/123/test */' (E) ''

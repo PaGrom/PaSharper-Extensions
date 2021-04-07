@@ -3,7 +3,7 @@ using System.Linq;
 using JetBrains.ReSharper.Psi.Format;
 using PaSharperExtension.Extensions;
 
-namespace PaSharperExtension.Analyzers.HttpClientMethodCall.ControlFlow.Context
+namespace PaSharperExtension.Analyzers.HttpClientMethodCall.Context
 {
     /// <summary>
     /// HttpClient variable info

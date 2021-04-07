@@ -2,12 +2,12 @@
 using System.Linq;
 using PaSharperExtension.Extensions;
 
-namespace PaSharperExtension.Analyzers.HttpClientMethodCall.ControlFlow.Context
+namespace PaSharperExtension.Analyzers.HttpClientMethodCall.Context
 {
     /// <summary>
     /// Control flow context for http client analyzer
     /// </summary>
-    public class HttpClientControlFlowContext
+    public class VariablesInfoContext
     {
         /// <summary>
         /// Collection of all declared strings
@@ -27,9 +27,9 @@ namespace PaSharperExtension.Analyzers.HttpClientMethodCall.ControlFlow.Context
         /// <summary>
         /// Merges two contexts to single
         /// </summary>
-        public HttpClientControlFlowContext Merge(HttpClientControlFlowContext context)
+        public VariablesInfoContext Merge(VariablesInfoContext context)
         {
-            return new HttpClientControlFlowContext
+            return new VariablesInfoContext
             {
                 StringVariables = StringVariables.MergeZip(context.StringVariables, (f, s) => f.Merge(s)).ToList(),
                 UriVariables = UriVariables.MergeZip(context.UriVariables, (f, s) => f.Merge(s)).ToList(),
